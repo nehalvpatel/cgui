@@ -1,7 +1,7 @@
 cgui
 ==========
 
-A web interface for cgminer that is made to reduce setup time and increase productivity, featuring the famous 2 minute install.
+A web interface for cgminer that is made to reduce setup time and increase productivity, featuring the famous 2 minute install. It adapts to mobile screens and re-arranges itself to look good on any display. Here's a [demo](http://patel.no-ip.biz).
 
 Getting started
 ----------
