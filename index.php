@@ -1,14 +1,14 @@
 <?php
 	
 	// Config
-	// Go to http://github.com/nehalvpatel for instructions
+	// Go to https://github.com/nehalvpatel/cgui for instructions
 	$timezone = "America/Chicago";
 	date_default_timezone_set($timezone);
 	
 	$rig = array(
-		"Name" => "Megalodon", // Name of the rig, optional
-		"Address" => "192.168.0.141",
-		"Port" => "4028"
+		"Name" => "",
+		"Address" => "",
+		"Port" => ""
 	);
 	
 	$config = array(
