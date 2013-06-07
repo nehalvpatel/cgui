@@ -14,3 +14,5 @@ Update your cgminer arguments to include ```--api-listen --api-network --api-por
 **Name**: whatever you call your rig, optional  
 **Address**: the local or remote IP address of the rig  
 **Port**: the port you set in the cgminer arguments, probably 4028
+
+Also, remember to edit the timezone with one from [this list](http://php.net/manual/en/timezones.php).
