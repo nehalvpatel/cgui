@@ -6,9 +6,9 @@
 	date_default_timezone_set($timezone);
 	
 	$rig = array(
-		"Name" => "",
-		"Address" => "",
-		"Port" => ""
+		"Name" => "Megalodon",
+		"Address" => "192.168.0.141",
+		"Port" => "4028"
 	);
 	
 	$config = array(
@@ -41,10 +41,10 @@
 		<link href="css/bootstrap.min.css" rel="stylesheet">
 		<link href="css/bootstrap-responsive.min.css" rel="stylesheet">
 		<link href="css/main.css" rel="stylesheet">
-		<link rel="apple-touch-icon" sizes="57x57" href="touch-icon-iphone-114.png">
-		<link rel="apple-touch-icon" sizes="114x114" href="touch-icon-iphone-114.png">
-		<link rel="apple-touch-icon" sizes="72x72" href="touch-icon-ipad-144.png">
-		<link rel="apple-touch-icon" sizes="144x144" href="touch-icon-ipad-144.png">
+		<link rel="apple-touch-icon-precomposed" sizes="57x57" href="touch-icon-iphone-114.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="touch-icon-iphone-114.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="touch-icon-ipad-144.png">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="touch-icon-ipad-144.png">
 		<link rel="icon" href="favicon.png">
 		<!--[if IE]><link rel="shortcut icon" href="favicon.ico"><![endif]-->
 		<title><?php if (isset($rig["Name"]) && !empty($rig["Name"])) { echo $rig["Name"]; } else { echo $rig["Address"] . ":" . $rig["Port"]; } ?></title>

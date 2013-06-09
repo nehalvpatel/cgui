@@ -4,7 +4,7 @@
 	
 	$wallet = array(
 		"Name" => "",
-		"Address" => ""
+		"Address" => "LMFFF1niJJeF3AnvNwFKnUKChCyYYHgqy2"
 	);
 	
 	if (empty($wallet["Address"])) {
@@ -27,10 +27,10 @@
 		<link href="css/bootstrap.min.css" rel="stylesheet">
 		<link href="css/bootstrap-responsive.min.css" rel="stylesheet">
 		<link href="css/main.css" rel="stylesheet">
-		<link rel="apple-touch-icon" sizes="57x57" href="touch-icon-iphone-114.png">
-		<link rel="apple-touch-icon" sizes="114x114" href="touch-icon-iphone-114.png">
-		<link rel="apple-touch-icon" sizes="72x72" href="touch-icon-ipad-144.png">
-		<link rel="apple-touch-icon" sizes="144x144" href="touch-icon-ipad-144.png">
+		<link rel="apple-touch-icon-precomposed" sizes="57x57" href="touch-icon-iphone-114.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="touch-icon-iphone-114.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="touch-icon-ipad-144.png">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="touch-icon-ipad-144.png">
 		<link rel="icon" href="favicon.png">
 		<!--[if IE]><link rel="shortcut icon" href="favicon.ico"><![endif]-->
 		<title><?php if (isset($wallet["Name"]) && !empty($wallet["Name"])) { echo $wallet["Name"]; } else { echo $wallet["Address"]; } ?></title>
