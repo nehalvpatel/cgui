@@ -6,9 +6,9 @@
 	date_default_timezone_set($timezone);
 	
 	$rig = array(
-		"Name" => "Megalodon",
-		"Address" => "192.168.0.141",
-		"Port" => "4028"
+		"Name" => "",
+		"Address" => "",
+		"Port" => ""
 	);
 	
 	$config = array(

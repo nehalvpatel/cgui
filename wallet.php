@@ -1,5 +1,17 @@
 <?php
 
+	function convert_timezone($timestamp, $format) {
+		global $timezone;
+		
+		$old_timezone = date_default_timezone_get();
+		date_default_timezone_set("UTC");
+		$date_timezone = new DateTime(date("Y-m-d H:i:s", $timestamp), new DateTimeZone("UTC"));
+		$date_timezone->setTimezone(new DateTimeZone($timezone));
+		date_default_timezone_set($old_timezone);
+		
+		return $date_timezone->format($format);
+	}
+	
 	$timezone = "America/Chicago";
 	
 	$wallet = array(
@@ -118,7 +130,7 @@
 						<td data-title="ID"><?php echo $transactions_count - $id; ?></td>
 						<td data-title="Transaction" class="break-word"><a href="<?php echo $hash_url . $transaction["hash"]; ?>"><?php echo $transaction["hash"]; ?></a></td>
 						<td data-title="Block"><?php echo $transaction[$block_key]; ?></td>
-						<td data-title="Time"><?php $date_timezone = new DateTime(date("Y-m-d H:i:s", $transaction[$time_key]), new DateTimeZone("UTC")); $date_timezone->setTimezone(new DateTimeZone($timezone)); echo $date_timezone->format('M j, Y h:i:s A'); ?></td>
+						<td data-title="Time"><?php echo convert_timezone($transaction[$time_key], "M j, Y h:i:s A"); ?></td>
 						<td data-title="Amount"><?php echo $amount; ?></td>
 					</tr>
 <?php
