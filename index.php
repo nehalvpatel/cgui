@@ -112,11 +112,18 @@
 							$gpu_request = $rig_api->request("gpu|" . $i);
 							$gpu_info = $gpu_request["GPU" . $i];
 							
+							$average_rate = 0;
+							if (isset($gpu_info["MHS 5s"])) {
+								$average_rate = $gpu_info["MHS 5s"];
+							} elseif (isset($gpu_info["MHS 1s"])) {
+								$average_rate = $gpu_info["MHS 1s"];
+							}
+							
 							if ($coin == "scrypt") {
-								$hash_rate = $gpu_info["MHS 5s"] * 1000;
+								$hash_rate = $average_rate * 1000;
 								$hash_speed = "kh/s";
 							} elseif ($coin == "sha256") {
-								$hash_rate = $gpu_info["MHS 5s"];
+								$hash_rate = $average_rate;
 								$hash_speed = "Mh/s";
 							}
 							
