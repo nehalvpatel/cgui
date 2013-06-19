@@ -191,7 +191,7 @@
 						<th>Pool</th>
 						<th>URL</th>
 						<th>User</th>
-						<th>Confirmed Rewards</th>
+						<th>Confirmed</th>
 						<th>Accepted</th>
 						<th>Rejected</th>
 						<th>Discarded</th>
@@ -258,7 +258,7 @@
 						<td data-title="Pool"><?php echo $i + 1; ?></td>
 						<td data-title="URL" class="long-data"><?php echo $rig_pool["POOL" . $i]["URL"]; ?></td>
 						<td data-title="User"><?php echo $rig_pool["POOL" . $i]["User"]; ?></td>
-						<td data-title="Confirmed Rewards"><?php echo $confirmed_rewards; ?></td>
+						<td data-title="Confirmed"><?php echo $confirmed_rewards; ?></td>
 						<td data-title="Accepted"><?php echo $rig_pool["POOL" . $i]["Accepted"]; ?></td>
 						<td data-title="Rejected" class="<?php echo $rejects_class; ?>"><?php echo $rig_pool["POOL" . $i]["Rejected"]; ?></td>
 						<td data-title="Discarded" class="<?php echo $discards_class; ?>"><?php echo $rig_pool["POOL" . $i]["Discarded"]; ?></td>
@@ -272,7 +272,7 @@
 						<td data-title="Pool"><?php echo $pool_count; ?></td>
 						<td class="dont-display"></td>
 						<td class="dont-display"></td>
-						<td data-title="Confirmed Rewards"><?php echo $total_confirmed; ?></td>
+						<td data-title="Confirmed"><?php echo $total_confirmed; ?></td>
 						<td data-title="Accepted"><?php echo $total_accepted; ?></td>
 						<td data-title="Rejected"><?php echo $total_rejected; ?></td>
 						<td data-title="Discarded"><?php echo $total_discarded; ?></td>
