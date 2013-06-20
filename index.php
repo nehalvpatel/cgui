@@ -110,8 +110,9 @@
 				</thead>
 				<tbody>
 <?php
-					
 						$total_rate = 0;
+						$total_errors = 0;
+						
 						for ($i = 0; $i < $gpu_count; $i++) {
 							$gpu_request = $rig_api->request("gpu|" . $i);
 							$gpu_info = $gpu_request["GPU" . $i];
@@ -132,6 +133,7 @@
 							}
 							
 							$total_rate += $hash_rate;
+							$total_errors += $gpu_info["Hardware Errors"];
 							
 							if ($gpu_info["Temperature"] >= $config["Temperature"][1]) {
 								$temperature_class = "error";
@@ -177,7 +179,7 @@
 						<td class="dont-display"></td>
 						<td class="dont-display"></td>
 						<td class="dont-display"></td>
-						<td class="dont-display"></td>
+						<td data-title="HW Errors"><?php echo $total_errors; ?></td>
 					</tr>
 				</tfoot>
 			</table>
