@@ -23,6 +23,8 @@
 		
 	);
 	
+	$fahrenheit = false;
+	
 	require_once("class.cgminer.php");
 	
 	$rig_api = new cgminerPHP($rig["Address"], $rig["Port"]);
@@ -156,7 +158,7 @@
 						<td data-title="Status"><?php if ($gpu_info["Status"] == "Alive" && $gpu_info["Enabled"] == "Y") { ?><i class="icon-ok-sign"></i><?php } else { ?><i class="icon-remove-sign"></i><?php } ?></td>
 						<td data-title="GPU"><?php echo $gpu_info["GPU"] + 1; ?></td>
 						<td data-title="Rate"><?php echo $hash_rate . $hash_speed ?></td>
-						<td data-title="Temp" class="<?php echo $temperature_class; ?>"><?php echo $gpu_info["Temperature"]; ?>°C</td>
+						<td data-title="Temp" class="<?php echo $temperature_class; ?>"><?php if ($fahrenheit === true) { echo sprintf("%02.2f", (9/5) * $gpu_info["Temperature"] + 32) . "°F"; } else { echo $gpu_info["Temperature"] . "°C"; } ?></td>
 						<td data-title="Fan Speed"><?php echo $gpu_info["Fan Speed"]; ?></td>
 						<td data-title="Fan Percent" class="<?php echo $fan_class; ?>"><?php echo $gpu_info["Fan Percent"]; ?>%</td>
 						<td data-title="GPU Clock"><?php echo $gpu_info["GPU Clock"]; ?></td>
