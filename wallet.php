@@ -74,9 +74,9 @@
 			<div class="well well-small info-block">
 				<strong>Address:</strong> <span class="break-word"><?php echo $wallet["Address"]; ?></span><?php echo PHP_EOL; ?>
 				<hr style="margin-top: 5px; margin-bottom: 5px;">
-				<strong>Balance:</strong> <?php if ($wallet["Currency"] == "LTC") { echo $wallet_data[$balance_key] . " " . $wallet["Currency"]; $ltc_json = json_decode(file_get_contents("https://btc-e.com/api/2/ltc_usd/ticker"), true); $dollar_value = intval($ltc_json["ticker"]["sell"] * $wallet_data[$balance_key]);  } else { echo number_format($wallet_data[$balance_key] / 100000000, 8) . " " . $wallet["Currency"]; $btc_json = json_decode(file_get_contents("https://btc-e.com/api/2/btc_usd/ticker"), true); $dollar_value = intval($btc_json["ticker"]["sell"] * number_format($wallet_data[$balance_key] / 100000000, 8)); } echo PHP_EOL; ?>
+				<strong>Balance:</strong> <?php if ($wallet["Currency"] == "LTC") { echo $wallet_data[$balance_key] . " " . $wallet["Currency"]; $ltc_json = json_decode(file_get_contents("https://btc-e.com/api/2/ltc_usd/ticker"), true); $dollar_value = $ltc_json["ticker"]["sell"] * $wallet_data[$balance_key]; } else { echo number_format($wallet_data[$balance_key] / 100000000, 8) . " " . $wallet["Currency"]; $btc_json = json_decode(file_get_contents("https://btc-e.com/api/2/btc_usd/ticker"), true); $dollar_value = $btc_json["ticker"]["sell"] * number_format($wallet_data[$balance_key] / 100000000, 8); } echo PHP_EOL; ?>
 				<br>
-				<strong>Value:</strong> $<?php echo number_format($dollar_value, 2, '.', ','); ?>
+				<strong>Value:</strong> $<?php echo number_format($dollar_value, 2, '.', ','); ?> USD
 				<br>
 				<strong>Transactions:</strong> <?php echo $transactions_count; ?>
 			</div>
