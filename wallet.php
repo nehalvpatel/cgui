@@ -48,6 +48,8 @@
 		$hash_url = "http://blockchain.info/tx/";
 		$amount_key = "result";
 		$balance_key = "final_balance";
+	} else{
+		die("Invalid currency type.");
 	}
 	
 ?>
