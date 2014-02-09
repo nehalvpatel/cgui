@@ -33,8 +33,15 @@
 	$rig_config = $rig_api->request("config");
 	$rig_coin = $rig_api->request("coin");
 	
+	$miner_program = $rig_summary["STATUS"]["Description"];
+	$asic_code = "ASC";
+	if (substr($miner_program, 0, 8) == "bfgminer") {
+		$asic_code = "PGA";
+	}
+	$asic_code_lower = strtolower($asic_code);
+	
 	$gpu_count = $rig_config["CONFIG"]["GPU Count"];
-	$asic_count = $rig_config["CONFIG"]["PGA Count"];
+	$asic_count = $rig_config["CONFIG"][$asic_code . " Count"];
 	$pool_count = $rig_config["CONFIG"]["Pool Count"];
 	$coin = $rig_coin["COIN"]["Hash Method"];
 
@@ -64,7 +71,7 @@
 			<div class="well well-small info-block">
 				<strong>Date:</strong> <?php echo date("M j, Y h:i:s A") . PHP_EOL; ?>
 				<hr style="margin-top: 5px; margin-bottom: 5px;">
-				<strong>Miner:</strong> <?php echo $rig_summary["STATUS"]["Description"]; ?>
+				<strong>Miner:</strong> <?php echo $miner_program; ?>
 				<br>
 				<strong>Started:</strong> <?php
 					$seconds_elapsed = $rig_summary["SUMMARY"]["Elapsed"];
@@ -119,8 +126,8 @@
 						$total_errors = 0;
 						
 						for ($i = 0; $i < $asic_count; $i++) {
-							$asic_request = $rig_api->request("pga|" . $i);
-							$asic_info = $asic_request["PGA" . $i];
+							$asic_request = $rig_api->request($asic_code_lower . "|" . $i);
+							$asic_info = $asic_request[$asic_code . $i];
 							
 							$device_name = $asic_info["Name"] . $asic_info["ID"];
 							
