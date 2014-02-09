@@ -34,9 +34,10 @@
 	$rig_coin = $rig_api->request("coin");
 	
 	$gpu_count = $rig_config["CONFIG"]["GPU Count"];
+	$asic_count = $rig_config["CONFIG"]["PGA Count"];
 	$pool_count = $rig_config["CONFIG"]["Pool Count"];
 	$coin = $rig_coin["COIN"]["Hash Method"];
-	
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -63,6 +64,8 @@
 			<div class="well well-small info-block">
 				<strong>Date:</strong> <?php echo date("M j, Y h:i:s A") . PHP_EOL; ?>
 				<hr style="margin-top: 5px; margin-bottom: 5px;">
+				<strong>Miner:</strong> <?php echo $rig_summary["STATUS"]["Description"]; ?>
+				<br>
 				<strong>Started:</strong> <?php
 					$seconds_elapsed = $rig_summary["SUMMARY"]["Elapsed"];
 					$started = time() - $seconds_elapsed;
@@ -93,13 +96,13 @@
 					echo PHP_EOL;
 				?>
 			</div>
-<?php if ($gpu_count > 0) { ?>
+<?php if ($gpu_count > 0 || $asic_count > 0) { ?>
 			<h1 class="info-header">Mining</h1>
 			<table class="table table-striped table-bordered table-hover info-block">
 				<thead>
 					<tr>
 						<th>Status</th>
-						<th>GPU</th>
+						<th>Device</th>
 						<th>Rate</th>
 						<th>Temp</th>
 						<th>Fan Speed</th>
@@ -115,9 +118,56 @@
 						$total_rate = 0;
 						$total_errors = 0;
 						
+						for ($i = 0; $i < $asic_count; $i++) {
+							$asic_request = $rig_api->request("pga|" . $i);
+							$asic_info = $asic_request["PGA" . $i];
+							
+							$device_name = $asic_info["Name"] . $asic_info["ID"];
+							
+							$cur_rate = 0;
+							
+							isset($asic_info["MHS 5s"]) ? $cur_rate = $asic_info["MHS 5s"] : $cur_rate = $asic_info["MHS av"];
+							
+							if ($coin == "scrypt") {
+								$hash_rate = $cur_rate * 1000;
+								$hash_speed = "kh/s";
+							} elseif ($coin == "sha256") {
+								$hash_rate = $cur_rate;
+								$hash_speed = "Mh/s";
+							}
+							
+							$total_rate += $hash_rate;
+							$total_errors += $asic_info["Hardware Errors"];
+							
+							if ($asic_info["Temperature"] >= $config["Temperature"][1]) {
+								$temperature_class = "error";
+							} elseif ($asic_info["Temperature"] >= $config["Temperature"][0]) {
+								$temperature_class = "warning";
+							} else {
+								$temperature_class = "";
+							}
+							
+?>
+					<tr>
+						<td data-title="Status"><?php if ($asic_info["Status"] == "Alive" && $asic_info["Enabled"] == "Y") { ?><i class="icon-ok-sign"></i><?php } else { ?><i class="icon-remove-sign"></i><?php } ?></td>
+						<td data-title="Device"><?php echo $device_name; ?></td>
+						<td data-title="Rate"><?php echo $hash_rate . $hash_speed ?></td>
+						<td data-title="Temp" class="<?php echo $temperature_class; ?>"><?php if ($fahrenheit === true) { echo sprintf("%02.2f", (9/5) * $asic_info["Temperature"] + 32) . "°F"; } else { echo $asic_info["Temperature"] . "°C"; } ?></td>
+						<td data-title="Fan Speed">n/a</td>
+						<td data-title="Fan Percent" class="">n/a</td>
+						<td data-title="GPU Clock">n/a</td>
+						<td data-title="Memory Clock">n/a</td>
+						<td data-title="Intensity">n/a</td>
+						<td data-title="HW Errors"><?php echo $asic_info["Hardware Errors"]; ?></td>
+					</tr>
+<?php
+						}
+						
 						for ($i = 0; $i < $gpu_count; $i++) {
 							$gpu_request = $rig_api->request("gpu|" . $i);
 							$gpu_info = $gpu_request["GPU" . $i];
+							
+							$device_name = "GPU" . $gpu_info["ID"];
 							
 							$average_rate = 0;
 							if (isset($gpu_info["MHS 5s"])) {
@@ -156,7 +206,7 @@
 					?>
 					<tr>
 						<td data-title="Status"><?php if ($gpu_info["Status"] == "Alive" && $gpu_info["Enabled"] == "Y") { ?><i class="icon-ok-sign"></i><?php } else { ?><i class="icon-remove-sign"></i><?php } ?></td>
-						<td data-title="GPU"><?php echo $gpu_info["GPU"] + 1; ?></td>
+						<td data-title="Device"><?php echo $device_name; ?></td>
 						<td data-title="Rate"><?php echo $hash_rate . $hash_speed ?></td>
 						<td data-title="Temp" class="<?php echo $temperature_class; ?>"><?php if ($fahrenheit === true) { echo sprintf("%02.2f", (9/5) * $gpu_info["Temperature"] + 32) . "°F"; } else { echo $gpu_info["Temperature"] . "°C"; } ?></td>
 						<td data-title="Fan Speed"><?php echo $gpu_info["Fan Speed"]; ?></td>
@@ -173,7 +223,7 @@
 				<tfoot>
 					<tr>
 						<td class="total-text"><strong>Total:</strong></td>
-						<td data-title="GPU"><?php echo $gpu_count; ?></td>
+						<td data-title="Device"><?php echo $gpu_count + $asic_count; ?></td>
 						<td data-title="Rate"><?php echo $total_rate . $hash_speed; ?></td>
 						<td class="dont-display"></td>
 						<td class="dont-display"></td>
