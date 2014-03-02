@@ -159,7 +159,7 @@
 						<td data-title="Status"><?php if ($asic_info["Status"] == "Alive" && $asic_info["Enabled"] == "Y") { ?><i class="icon-ok-sign"></i><?php } else { ?><i class="icon-remove-sign"></i><?php } ?></td>
 						<td data-title="Device"><?php echo $device_name; ?></td>
 						<td data-title="Rate"><?php echo $hash_rate . $hash_speed ?></td>
-						<td data-title="Temp" class="<?php echo $temperature_class; ?>"><?php if ($fahrenheit === true) { echo sprintf("%02.2f", (9/5) * $asic_info["Temperature"] + 32) . "°F"; } else { echo $asic_info["Temperature"] . "°C"; } ?></td>
+						<td data-title="Temp" class="<?php echo $temperature_class; ?>"><?php if (isset($asic_info["Temperature"])) { if ($fahrenheit === true) { echo sprintf("%02.2f", (9/5) * $asic_info["Temperature"] + 32) . "°F"; } else { echo $asic_info["Temperature"] . "°C"; } } else { echo "n/a"; } ?></td>
 						<td data-title="Fan Speed">n/a</td>
 						<td data-title="Fan Percent" class="">n/a</td>
 						<td data-title="GPU Clock">n/a</td>
