@@ -303,12 +303,25 @@
 							$pool_data = parse_url($rig_pool["POOL" . $i]["URL"]);
 							if (isset($apis[$pool_data["host"]])) {
 								$api_data = json_decode(file_get_contents($apis[$pool_data["host"]]), true);
-								if (isset($api_data["confirmed_rewards"])) {
-									$confirmed_rewards = $api_data["confirmed_rewards"];
-									if ($total_confirmed == "N/A") {
-										$total_confirmed = $confirmed_rewards;
-									} else {
-										$total_confirmed += $confirmed_rewards;
+								
+								$confirmed_indexes = array(
+									@$api_data["confirmed_rewards"],
+									@$api_data["confirmed_reward"],
+									@$api_data["user"]["unpaid_rewards"],
+									@$api_data["user"]["confirmed_rewards"],
+									@$api_data["getuserstatus"]["balance"]
+								);
+								
+								foreach ($confirmed_indexes as $conf_i) {
+									if (!empty($conf_i)) {
+										$confirmed_rewards = $conf_i;
+										if ($total_confirmed == "N/A") {
+											$total_confirmed = $confirmed_rewards;
+										} else {
+											$total_confirmed += $confirmed_rewards;
+										}
+										
+										break;
 									}
 								}
 							}
