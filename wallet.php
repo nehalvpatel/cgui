@@ -17,7 +17,7 @@
 	$wallet = array(
 		"Name" => "",
 		"Address" => "",
-		"Currency" => ""
+		"Currency" => "" // Can be LTC or BTC
 	);
 	
 	if (empty($wallet["Address"])) {
@@ -25,17 +25,16 @@
 	}
 	
 	if ($wallet["Currency"] == "LTC") {
-		$wallet_data = json_decode(file_get_contents("http://api.ltcd.info/address/" . $wallet["Address"]), true);
-		if (isset($wallet_data["error"])) {
-			die("Error fetching wallet data: " . $wallet_data["error"]);
+		$wallet_data = json_decode(file_get_contents("http://ltc.blockr.io/api/v1/address/info/" . $wallet["Address"]), true);
+		if (!$wallet_data["data"]["is_valid"]) {
+			die("Error fetching wallet data");
 		}
-		$transactions_key = "transactions";
-		$transactions_count = $wallet_data["txin"] + $wallet_data["txout"];
-		$block_key = "block";
-		$time_key = "timestamp";
-		$hash_url = "http://explorer.litecoin.net/tx/";
-		$amount_key = "amount";
+		$transactions_count = $wallet_data["data"]["nb_txs"];
 		$balance_key = "balance";
+		$hash_url = "http://explorer.litecoin.net/tx/";
+		
+		$tx_data = json_decode(file_get_contents("http://ltc.blockr.io/api/v1/address/txs/" . $wallet["Address"]), true);
+		$time_key = "time";
 	} elseif ($wallet["Currency"] == "BTC") {
 		$wallet_data = json_decode(@file_get_contents("http://blockchain.info/address/" . $wallet["Address"] . "?format=json"), true);
 		if (!$wallet_data) {
@@ -48,7 +47,7 @@
 		$hash_url = "http://blockchain.info/tx/";
 		$amount_key = "result";
 		$balance_key = "final_balance";
-	} else{
+	} else {
 		die("Invalid currency type.");
 	}
 	
@@ -76,20 +75,20 @@
 			<div class="well well-small info-block">
 				<strong>Address:</strong> <span class="break-word"><?php echo $wallet["Address"]; ?></span><?php echo PHP_EOL; ?>
 				<hr style="margin-top: 5px; margin-bottom: 5px;">
-				<strong>Balance:</strong> <?php if ($wallet["Currency"] == "LTC") { echo $wallet_data[$balance_key] . " " . $wallet["Currency"]; $ltc_json = json_decode(file_get_contents("https://btc-e.com/api/2/ltc_usd/ticker"), true); $dollar_value = $ltc_json["ticker"]["sell"] * $wallet_data[$balance_key]; } else { echo number_format($wallet_data[$balance_key] / 100000000, 8) . " " . $wallet["Currency"]; $btc_json = json_decode(file_get_contents("https://btc-e.com/api/2/btc_usd/ticker"), true); $dollar_value = $btc_json["ticker"]["sell"] * number_format($wallet_data[$balance_key] / 100000000, 8); } echo PHP_EOL; ?>
+				<strong>Balance:</strong> <?php if ($wallet["Currency"] == "LTC") { echo $wallet_data["data"][$balance_key] . " " . $wallet["Currency"]; $ltc_json = json_decode(file_get_contents("https://btc-e.com/api/2/ltc_usd/ticker"), true); $dollar_value = $ltc_json["ticker"]["sell"] * $wallet_data["data"][$balance_key]; } else { echo number_format($wallet_data[$balance_key] / 100000000, 8) . " " . $wallet["Currency"]; $btc_json = json_decode(file_get_contents("https://btc-e.com/api/2/btc_usd/ticker"), true); $dollar_value = $btc_json["ticker"]["sell"] * number_format($wallet_data[$balance_key] / 100000000, 8); } echo PHP_EOL; ?>
 				<br>
 				<strong>Value:</strong> $<?php echo number_format($dollar_value, 2, '.', ','); ?> USD
 				<br>
 				<strong>Transactions:</strong> <?php echo $transactions_count; ?>
 			</div>
-			<?php if (count($wallet_data[$transactions_key]) > 0) { ?>
+			<?php if ((count(@$wallet_data[$transactions_key]) > 0 && $wallet["Currency"] == "BTC") || (count(@$tx_data["data"]["txs"] > 0) && $wallet["Currency"] == "LTC")) { ?>
 			<h1 class="info-header">Transactions</h1>
 			<table class="table table-striped table-bordered table-hover info-block">
 				<thead>
 					<tr>
 						<th>ID</th>
 						<th>Transaction</th>
-						<th>Block</th>
+<?php if ($wallet["Currency"] == "BTC") echo "						<th>Block</th>"; ?>
 						<th>Time</th>
 						<th>Amount</th>
 					</tr>
@@ -101,26 +100,24 @@
 							global $time_key;
 							return $b[$time_key] - $a[$time_key];
 						}
-						usort($wallet_data[$transactions_key], "sort_chronologically");
-						
-						foreach ($wallet_data[$transactions_key] as $id => $transaction) {
-							if ($wallet["Currency"] == "LTC") {
-								$amount = $transaction["amount"];
-							} elseif ($wallet["Currency"] == "BTC") {
+						if ($wallet["Currency"] == "BTC") {
+							usort($wallet_data[$transactions_key], "sort_chronologically");
+							
+							foreach ($wallet_data[$transactions_key] as $id => $transaction) {
 								$sent = 0;
 								foreach ($transaction["inputs"] as $input) {
 									if ($input["prev_out"]["addr"] == $wallet["Address"]) {
 										$sent += $input["prev_out"]["value"];
 									}
 								}
-								
+									
 								$received = 0;
 								foreach ($transaction["out"] as $input) {
 									if ($input["addr"] == $wallet["Address"]) {
 										$received += $input["value"];
 									}
 								}
-								
+									
 								if ($sent == 0) {
 									$amount = $received / 100000000;
 								} elseif ($received == 0) {
@@ -128,7 +125,6 @@
 									$amount = 0 - $amount;
 								}
 								$amount = number_format($amount, 8);
-							}
 					?>
 					<tr class="<?php if ($amount >= 0) { echo "success"; } else { echo "error"; } ?>">
 						<td data-title="ID"><?php echo $transactions_count - $id; ?></td>
@@ -138,6 +134,24 @@
 						<td data-title="Amount"><?php echo $amount; ?></td>
 					</tr>
 <?php
+							}
+						
+						}
+						elseif ($wallet["Currency"] == "LTC") {
+							$tx_array = $tx_data["data"]["txs"];
+							foreach ($tx_array as $id => $tx) {
+								$tx_hash = $tx["tx"];
+								$time = date("M j, Y h:i:s A", strtotime($tx["time_utc"]));
+								$amount = $tx["amount"];
+?>
+					<tr class="<?php if ($amount >= 0) { echo "success"; } else { echo "error"; } ?>">
+						<td data-title="ID"><?php echo $transactions_count - $id; ?></td>
+						<td data-title="Transaction" class="break-word"><a href="<?php echo $hash_url . $tx_hash; ?>"><?php echo $tx_hash; ?></a></td>
+						<td data-title="Time"><?php echo $time; ?></td>
+						<td data-title="Amount"><?php echo $amount; ?></td>
+					</tr>
+<?php
+							}
 						}
 					?>
 				</tbody>
